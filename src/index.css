@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  transition: 0.15s linear;
+}
+
+#hero-image {
+  animation: moveUpDown 2s linear infinite alternate;
+}
+
+@keyframes moveUpDown {
+  0% {
+      top: 0;
+  }
+  100% {
+      top: 20px;
+  }
+}
