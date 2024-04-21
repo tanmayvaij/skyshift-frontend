@@ -6,6 +6,9 @@ import {
   createJenkinsJob,
   triggerJenkinsBuild,
 } from "../../apis";
+import { useUserProfileAtom } from "../../recoil/atoms";
+import { toast } from "react-toastify";
+import { toastConfig } from "../../configs";
 
 interface ProjectCardProps {
   projectId: string;
@@ -14,88 +17,131 @@ interface ProjectCardProps {
   githubBranch: string;
 }
 
-const terraformCodeGenerationConfig = {
-  region: "ap-south-1",
-  ami: "ami-03bb6d83c60fc5f7c",
-  inbound_rules: [
-    {
-      from_port: 80,
-      to_port: 80,
-      protocol: "tcp",
-      cidr_blocks: ["0.0.0.0/0"],
-    },
-    {
-      from_port: 22,
-      to_port: 22,
-      protocol: "tcp",
-      cidr_blocks: ["0.0.0.0/0"],
-    },
-  ],
-  instance_type: "t2.micro",
-  outbound_rules: [
-    {
-      from_port: 80,
-      to_port: 80,
-      protocol: "tcp",
-      cidr_blocks: ["0.0.0.0/0"],
-    },
-    {
-      from_port: 22,
-      to_port: 22,
-      protocol: "tcp",
-      cidr_blocks: ["0.0.0.0/0"],
-    },
-  ],
-  jenkins_node_label: "premchand",
-  jenkins_node_name: "premchand",
-  keypair: "shreyash_keypair2",
-  label: "premchand",
-  name: "premchand",
-};
-
 const ProjectCard: React.FC<ProjectCardProps> = ({
   projectId,
   projectName,
   githubBranch,
   githubLink,
 }) => {
-  const deployProject = () => {
-    alert("generating terraform code")
-    generateTerraformCode(terraformCodeGenerationConfig)
-      .then((res) => {
-        
-        if (res?.status) {
-          alert("Creating user session")
-          createUserSession({ username: "premchand", script: res.response })
-            .then((res) => {
 
-              alert("Starting user session")
+  const [ profile ] = useUserProfileAtom()
+
+  console.log(profile);
+  
+
+  const userProjectSlug = `${profile?.email.split("@")[0]}-${projectId.slice(0, 5)}`
+
+  console.log(userProjectSlug);
+  
+
+  const deployProject = () => {
+    generateTerraformCode({
+      region: "ap-south-1",
+      ami: "ami-03bb6d83c60fc5f7c",
+      inbound_rules: [
+        {
+          from_port: 80,
+          to_port: 80,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+        {
+          from_port: 22,
+          to_port: 22,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        }, 
+        {
+          from_port: 3000,
+          to_port: 3000,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+      ],
+      instance_type: "t2.micro",
+      outbound_rules: [
+        {
+          from_port: 80,
+          to_port: 80,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+        {
+          from_port: 443,
+          to_port: 443,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+        {
+          from_port: 80,
+          to_port: 8080,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+        {
+          from_port: 5000,
+          to_port: 5000,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+        {
+          from_port: 50000,
+          to_port: 50000,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+        {
+          from_port: 22,
+          to_port: 22,
+          protocol: "tcp",
+          cidr_blocks: ["0.0.0.0/0"],
+        },
+      ],
+      jenkins_node_label: userProjectSlug,
+      jenkins_node_name: userProjectSlug,
+      keypair: "shreyash_keypair2",
+      label: userProjectSlug,
+      name: userProjectSlug,
+    })
+      .then((res) => {
+        console.log("Generate terraform code response", res);
+
+        toast.info("Generated terraform code", toastConfig)
+
+        if (res?.status) {
+          createUserSession({ username: userProjectSlug, script: res.response })
+            .then((res) => {
+              console.log("Create user session response", res);
+
+              toast.info("Created user session", toastConfig)
+
               startUserSession({
                 session_id: res.SessionID,
-                username: "premchand",
+                username: userProjectSlug,
               })
-                .then(() => {
-                  
-                  alert("creating jenkins build")
+                .then((res) => {
+                  console.log("start user session response", res);
+
                   createJenkinsJob({
-                    job_name: "premchand",
+                    job_name: userProjectSlug,
                     build_steps: [
-                      "sudo su",
-                      "apt update -y",
-                      "apt install nodejs npm -y",
+                      "sudo apt update -y",
+                      "sudo apt install nodejs npm -y",
                       "git clone https://github.com/tanmayvaij/skyshift-test-app.git",
                       "cd ./skyshift-test-app",
                       "npm install",
-                      "npm start",
+                      "npm install -g serve",
+                      "npm run build",
+                      "serve ./dist/"
                     ],
-                    node_label: "premchand",
+                    node_label: userProjectSlug,
                   })
-                    .then(() => {
+                    .then((res) => {
+                      console.log("Creating jenkins build response", res);
 
-                      alert("triggering jenkins build")
-                      triggerJenkinsBuild({ job_name: "premchand" })
+                      triggerJenkinsBuild({ job_name: userProjectSlug })
                         .then((res) => {
-                          console.log(res);
+                          console.log("Triggering jenkins build response", res);
                         })
                         .catch((err) => {
                           console.log(err);
@@ -118,7 +164,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         console.log(err);
       });
   };
-
 
   return (
     <div className="border rounded-md overflow-hidden shadow-sm">

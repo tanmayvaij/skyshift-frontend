@@ -117,7 +117,7 @@ export const startUserSession = async (data: StartUserSessionRequestProps) => {
     const res = await axiosInstance.post<
       StartUserSessionRequestProps,
       AxiosResponse<StartUserSessionResponseProps>
-    >("/user/create_session", data);
+    >("/user/start_session", data);
     return res.data;
   } catch (error) {
     throw error
@@ -131,7 +131,7 @@ export const createJenkinsJob = async (
     const res = await axiosInstance.post<
       JenkinsJobCreationRequestProps,
       AxiosResponse<JenkinsJobCreationResponseProps>
-    >("/user/create_session", data);
+    >("/jenkins/create_job", data);
     return res.data;
   } catch (error) {
     throw error
@@ -145,7 +145,7 @@ export const triggerJenkinsBuild = async (
     const res = await axiosInstance.post<
       JenkinsBuildTriggerRequestProps,
       AxiosResponse<JenkinsBuildTriggerResponseProps>
-    >("/user/create_session", data);
+    >("/jenkins/trigger_build", data);
     return res.data;
   } catch (error) {
     throw error

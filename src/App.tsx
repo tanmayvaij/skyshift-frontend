@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Navbar } from "./components";
 import HomePage from "./pages/HomePage";
-import { useAuthAtom } from "./recoil/atoms";
+import { useAuthAtom, useUserProfileAtom } from "./recoil/atoms";
 import LoginPage from "./pages/LoginPage";
 import SignUp from "./pages/SignUpPage";
 import { ToastContainer } from "react-toastify";
@@ -14,11 +14,16 @@ import { Puff } from "react-loader-spinner";
 
 const App = () => {
   const [auth, setAuth] = useAuthAtom();
+  const [_, setProfile] = useUserProfileAtom();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const authConfig = localStorage.getItem("authConfig");
     if (authConfig) setAuth(JSON.parse(authConfig));
+
+    const userProfile = localStorage.getItem("userProfile");
+    if (userProfile) setProfile(JSON.parse(userProfile));
+
     setLoading(false);
   }, []);
 

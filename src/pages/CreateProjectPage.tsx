@@ -113,7 +113,7 @@ const CreateProjectPage = () => {
           onChange={handleChange}
           value={values.projectLanguage}
           errorMessage={errors.projectLanguage}
-          label="Enter your project"
+          label="Enter your project language"
         />
 
         <button

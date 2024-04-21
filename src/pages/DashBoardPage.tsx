@@ -20,6 +20,22 @@ const DashBoardPage = () => {
   const [userProjects, setUserProjects] = useState<UserProject[] | null>(null);
 
   useEffect(() => {
+    if (!localStorage.getItem("userProfile")) {
+      axios
+        .get(`${import.meta.env.VITE_SERVER_URL}/user/get-profile`, {
+          headers: { Authentication: auth.authToken },
+        })
+        .then((profile) => {
+          localStorage.setItem(
+            "userProfile",
+            JSON.stringify(profile.data.userProfile)
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
     axios
       .get(`${import.meta.env.VITE_SERVER_URL}/project/get`, {
         headers: { Authentication: auth.authToken },
@@ -62,7 +78,7 @@ const DashBoardPage = () => {
         </div>
       ) : (
         <div className="flex items-center justify-center h-80">
-            <p className="text-lg">No projects to deployed yet</p>
+          <p className="text-lg">No projects to deployed yet</p>
         </div>
       )}
     </div>
