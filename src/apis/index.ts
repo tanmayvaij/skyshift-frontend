@@ -73,11 +73,24 @@ interface JenkinsBuildTriggerRequestProps {
 }
 
 interface JenkinsBuildTriggerResponseProps {
+  code: 1;
   message: string;
 }
 
+interface SessionInfoRequestProps {
+  username: string;
+  session_id: string;
+}
+
+interface SessionInfoResponseProps {
+  Output: string;
+  code: 1;
+  private_ip: string;
+  public_ip: string;
+}
+
 const axiosInstance = axios.create({
-  baseURL: "http://13.233.103.230:5000",
+  baseURL: "http://43.205.96.242:5000",
 });
 
 export const generateTerraformCode = async (
@@ -91,8 +104,7 @@ export const generateTerraformCode = async (
 
     return res.data;
   } catch (error) {
-    throw error
-    
+    throw error;
   }
 };
 
@@ -106,9 +118,8 @@ export const createUserSession = async (
     >("/user/create_session", data);
 
     return res.data;
-
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -120,7 +131,7 @@ export const startUserSession = async (data: StartUserSessionRequestProps) => {
     >("/user/start_session", data);
     return res.data;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -134,7 +145,7 @@ export const createJenkinsJob = async (
     >("/jenkins/create_job", data);
     return res.data;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -148,6 +159,18 @@ export const triggerJenkinsBuild = async (
     >("/jenkins/trigger_build", data);
     return res.data;
   } catch (error) {
-    throw error
+    throw error;
+  }
+};
+
+export const sessionInfo = async (data: SessionInfoRequestProps) => {
+  try {
+    const res = await axiosInstance.post<
+      SessionInfoRequestProps,
+      AxiosResponse<SessionInfoResponseProps>
+    >("/user/session_info", data);
+    return res.data;
+  } catch (error) {
+    throw error;
   }
 };
