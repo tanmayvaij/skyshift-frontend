@@ -62,7 +62,7 @@ const DashBoardPage = () => {
         <h2 className="font-medium text-4xl text-gray-800">Your Projects</h2>
         <img src="project.jpg" className="w-64" alt="" />
       </div>
-      {userProjects.length !== 0 ? (
+      {userProjects?.length !== 0 ? (
         <div className="grid grid-cols-3 gap-3 mx-16">
           {userProjects?.map((project) => {
             return (

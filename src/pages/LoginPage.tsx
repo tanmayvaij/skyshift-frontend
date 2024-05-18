@@ -48,7 +48,9 @@ const LoginPage = () => {
             },
           },
           error: {
-            render: ({ data }: any) => data.response.data.message,
+            render: ({ data }: any) => {
+              return data.response.data.message
+            },
           },
         },
         toastConfig
