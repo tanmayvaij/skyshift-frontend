@@ -8,8 +8,6 @@ import {
   sessionInfo,
 } from "../../apis";
 import { useUserProfileAtom } from "../../recoil/atoms";
-import { toast } from "react-toastify";
-import { toastConfig } from "../../configs";
 import { useState } from "react";
 import { Watch } from "react-loader-spinner";
 
@@ -19,6 +17,12 @@ interface ProjectCardProps {
   githubLink: string;
   githubBranch: string;
 }
+
+interface SessionInfoRequestProps {
+  username: string;
+  session_id: string;
+}
+
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
   projectId,
@@ -45,7 +49,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const [isProjectDeployed, setISProjectDeployed] = useState(false);
 
-  let sessionRes = {};
+  let sessionRes: SessionInfoRequestProps = {
+    session_id: "",
+    username: ""
+  };
 
   const deployProject = () => {
     setIsDeploymentStarted(true);

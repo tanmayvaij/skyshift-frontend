@@ -1,8 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-
-interface SkyShiftErrorMessageProps {
-  Error: string;
-}
+import axios, { AxiosResponse } from "axios";
 
 interface SecurityGroupRuleProps {
   from_port: number;
@@ -26,11 +22,6 @@ interface TerraformCodeGenerationRequestProps {
 }
 
 interface TerraformCodeGenerationResponseProps {
-  response: string;
-  status: boolean;
-}
-
-interface TerraformCodeGenerationErrorProps {
   response: string;
   status: boolean;
 }
